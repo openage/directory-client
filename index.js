@@ -1,7 +1,7 @@
 'use strict'
 
 const directoryConfig = require('config').get('providers.directory')
-const logger = require('@open-age/logger')('open-age.directory-client')
+const logger = require('@open-age/logger')('@open-age/directory-client')
 const Client = require('node-rest-client-promise').Client
 const client = new Client()
 
