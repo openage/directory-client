@@ -29,7 +29,7 @@ const getRole = (roleKey, roleId) => {
         }
     }
 
-    const url = `${config.url}/api/roles/${id}`
+    const url = `${config.url}/roles/${id}`
     log.info(`getting role from ${url}`)
 
     return new Promise((resolve, reject) => {
@@ -54,7 +54,7 @@ const getRoleById = (id) => {
     }
 
     return new Promise((resolve, reject) => {
-        const url = `${config.url}/api/employees/${id}`
+        const url = `${config.url}/roles/${id}`
 
         return client.get(url, args, (data, response) => {
             if (!data || !data.isSuccess) {
