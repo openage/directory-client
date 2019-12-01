@@ -1,6 +1,6 @@
 {
     "name": "@open-age/directory-client",
-    "version": "2.0.1",
+    "version": "2.1.0",
     "description": "a client to connect to open-age directory",
     "main": "index.js",
     "scripts": {

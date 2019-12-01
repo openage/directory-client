@@ -5,42 +5,66 @@ const logger = require('@open-age/logger')('@open-age/directory-client')
 const Client = require('node-rest-client-promise').Client
 const client = new Client()
 
-let parsedConfig = (config) => {
-    config = config || {}
-
-    return {
-        url: config.url || directoryConfig.url,
-        tenantKey: config.api_key || directoryConfig.api_key,
-        lastSyncDate: config.lastSyncDate
+let parsedConfig = (context) => {
+    let config = {
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        url: directoryConfig.url,
+        role: {
+            key: directoryConfig.api_key
+        }
     }
-}
 
-const injectHeader = (headers, context) => {
-    if (!context) {
-        return
+    context = context || {}
+
+    let tenant = context.tenant
+
+    if (tenant) {
+        config.headers['x-tenant-code'] = context.tenant.code
+
+        let services = tenant.services = []
+
+        let directoryService = services.find(s => s.code === 'directory')
+
+        if (directoryService) {
+            config.url = directoryService.url
+            config.lastSyncDate = directoryService.lastSyncDate
+        }
+
+        let owner = tenant.owner
+        if (owner) {
+            config.role = owner.role
+        }
     }
 
     if (context.session) {
-        headers['x-session-id'] = context.session.id
+        config.headers['x-session-id'] = context.session.id
     }
 
     if (context.id) {
-        headers['x-context-id'] = context.id
+        config.headers['x-context-id'] = context.id
     }
 
-    if (context.role) {
-        headers['x-role-key'] = context.role.key
-    } else if (context.user && context.user.role) {
-        headers['x-role-key'] = context.user.role.key
+    let role = context.role
+
+    if (!role && context.user && context.user.role) {
+        role = context.user.role
+    }
+
+    if (!role) {
+        role = config.role
+    }
+
+    if (role) {
+        config.headers['x-role-key'] = role.key
     }
 
     if (context.organization) {
-        headers['x-organization-code'] = context.organization.code
+        config.headers['x-organization-code'] = context.organization.code
     }
 
-    if (context.tenant) {
-        headers['x-tenant-code'] = context.tenant.code
-    }
+    return config
 }
 
 /**
@@ -55,20 +79,14 @@ const getRole = (roleKey, context) => {
     }
     log = log.start('directory-client:getMyRole')
 
-    const key = roleKey || directoryConfig.key
-    const id = 'my'
-
-    let config = parsedConfig()
+    let config = parsedConfig(context)
     let args = {
-        headers: {
-            'Content-Type': 'application/json',
-            'x-role-key': key
-        }
+        headers: config.headers
     }
 
-    injectHeader(args.headers, context)
+    args.headers['x-role-key'] = roleKey
 
-    const url = `${config.url}/roles/${id}`
+    const url = `${config.url}/roles/my`
     log.debug(`getting role from ${url}`)
 
     return new Promise((resolve, reject) => {
@@ -94,15 +112,10 @@ const getRoleById = (id, context) => {
     }
     log = log.start('directory-client:getRoleById')
 
-    let config = parsedConfig()
+    let config = parsedConfig(context)
     let args = {
-        headers: {
-            'Content-Type': 'application/json',
-            'x-role-key': config.tenantKey
-        }
+        headers: config.headers
     }
-
-    injectHeader(args.headers, context)
 
     return new Promise((resolve, reject) => {
         const url = `${config.url}/roles/${id}`
@@ -130,15 +143,10 @@ const getSessionById = (id, context) => {
     }
     log = log.start('directory-client:getSessionById')
 
-    let config = parsedConfig()
+    let config = parsedConfig(context)
     let args = {
-        headers: {
-            'Content-Type': 'application/json',
-            'x-role-key': config.tenantKey
-        }
+        headers: config.headers
     }
-
-    injectHeader(args.headers, context)
 
     return new Promise((resolve, reject) => {
         const url = `${config.url}/sessions/${id}`
