@@ -173,3 +173,5 @@ exports.roles = {
 exports.sessions = {
     get: getSessionById
 }
+
+exports.auth = require('./api/auth')
