@@ -1,6 +1,6 @@
 {
     "name": "@open-age/directory-client",
-    "version": "2.2.0",
+    "version": "2.2.2",
     "description": "a client to connect to open-age directory",
     "main": "index.js",
     "scripts": {
@@ -24,7 +24,8 @@
     "peerDependencies": {
         "config": "^1.31.0",
         "node-rest-client": "^3.1.0",
-        "node-rest-client-promise": "^2.0.0"
+        "node-rest-client-promise": "^2.0.0",
+        "validator": "^6.0.0"
     },
     "author": "Sunny Parkash <sunny.parkash@gmail.com> (https://github.com/sunnyparkash)",
     "license": "WTFPL",
