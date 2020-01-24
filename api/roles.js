@@ -177,7 +177,7 @@ exports.get = async (query, context) => {
     if (typeof query === 'string') {
         if (validator.isMongoId(query)) {
             return getById(query, context)
-        } else if (query.length === 36) {
+        } else if (validator.isUUID(query)) {
             return getByKey(query, context)
         } else {
             return getRoleByCode(query, context)
