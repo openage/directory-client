@@ -56,7 +56,7 @@ let parsedConfig = (context) => {
         role = config.role
     }
 
-    if (role) {
+    if (role && role.key) {
         config.headers['x-role-key'] = role.key
     }
 
